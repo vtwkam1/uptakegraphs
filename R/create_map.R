@@ -23,12 +23,12 @@ create_map <- function(metric_df, unit) {
     # Load in the a .geoJSON file containing the relevant geographical shapes and simplify
     # these to increase plotting speed. In the code below, we are keeping 10% of the total points.
     shapes <- sf::read_sf(vars[[unit]][["geojson_file"]]) %>%
-        ms_simplify(keep = 0.1,
+        rmapshaper::ms_simplify(keep = 0.1,
                     # Stops small polygons from disappearing
                     keep_shapes = TRUE) %>%
-        st_transform('+proj=longlat +datum=WGS84')
+        sf::st_transform('+proj=longlat +datum=WGS84')
 
-    names(shapes) <- make_clean_names(names(shapes))
+    names(shapes) <- janitor::make_clean_names(names(shapes))
 
     # Combine these shapes into a single shape for the whole of England.
     # Setting the sf_use_s2() function to FALSE prevents the use of spherical geometry
