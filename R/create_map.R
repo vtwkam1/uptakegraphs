@@ -43,7 +43,7 @@ create_map <- function(metric_df, unit) {
     map_table <- left_join(shapes, metric_df, by = join_by(!!temp_join_col == "geo_code"))
 
     # Set up colour palette using the NICE sequential palette
-    pal <- colorBin(colorRampPalette(nice_pal("seq"))(5),
+    pal <- leaflet::colorBin(colorRampPalette(nice_pal("seq"))(5),
                     domain = map_table$proportion,
                     bins = 5,
                     reverse = TRUE, # Darker colours for low uptake
@@ -55,7 +55,7 @@ create_map <- function(metric_df, unit) {
     # Create chart
     leaflet_map <- map_table %>%
         # Set up degree of zoom using controls and scroll
-        leaflet(options = leafletOptions(zoomDelta = 0.25,
+        leaflet::leaflet(options = leafletOptions(zoomDelta = 0.25,
                                          zoomSnap = 0.25)) %>%
         # Set view to centre on England and set appropriate zoom
         setView(lat = 53,
@@ -82,7 +82,7 @@ create_map <- function(metric_df, unit) {
                     # Set font options
                     labelOptions = labelOptions(textsize = "12px",
                                                 style = list("font-family" = "Inter Regular"))) %>%
-        addLegend(position = "bottomleft",
+        leaflet::addLegend(position = "bottomleft",
                   pal = pal,
                   values = ~map_table$proportion,
                   title = "Uptake",
