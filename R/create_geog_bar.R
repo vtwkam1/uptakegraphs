@@ -4,7 +4,7 @@
 #' @param ods_lookup_df
 #' @param input_geog_tabs
 
-create_geog_bar <- function(df, ods_lookup_df, input_geog_tabs){
+create_geog_bar <- function(df, input_geog_tabs){
 
     median_var <- df %>%
         filter(metric_category == input_geog_tabs,
@@ -15,7 +15,6 @@ create_geog_bar <- function(df, ods_lookup_df, input_geog_tabs){
     tmp <- df %>%
         filter(metric_category == input_geog_tabs,
                period_end_date == max(period_end_date)) %>%
-        left_join(ods_lookup_df, by = c("metric_category_group" = "ods_code")) %>%
         plot_ly(x = ~reorder(metric_category_group, proportion),
                 y = ~proportion*100,
                 type = "bar",
