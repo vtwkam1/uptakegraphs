@@ -20,3 +20,5 @@ Imports:
     rmapshaper,
     scales,
     sf
+URL: https://github.com/vtwkam1/uptakegraphs
+BugReports: https://github.com/vtwkam1/uptakegraphs/issues
