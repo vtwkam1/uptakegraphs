@@ -55,23 +55,23 @@ create_map <- function(metric_df, unit) {
     # Create chart
     leaflet_map <- map_table %>%
         # Set up degree of zoom using controls and scroll
-        leaflet::leaflet(options = leafletOptions(zoomDelta = 0.25,
+        leaflet::leaflet(options = leaflet::leafletOptions(zoomDelta = 0.25,
                                          zoomSnap = 0.25)) %>%
         # Set view to centre on England and set appropriate zoom
-        setView(lat = 53,
+        leaflet::setView(lat = 53,
                 lng = -1.5,
                 zoom = 5.8) %>%
         # Add the base map tile
-        addProviderTiles(provider = "CartoDB.Positron") %>%
+        leaflet::addProviderTiles(provider = "CartoDB.Positron") %>%
         # Add our shapes
-        addPolygons(fillColor = ~pal(proportion),
+        leaflet::addPolygons(fillColor = ~pal(proportion),
                     fillOpacity = 1,
-                    color = nice_cols("black_100"),
+                    color = niceRplots::nice_cols("black_100"),
                     weight = 0.5,
                     opacity = 1,
                     # Add functionality to highlight shape when hovered over
-                    highlight = highlightOptions(weight = 3,
-                                                 color = nice_cols("positive_yellow_100"),
+                    highlight = leaflet::highlightOptions(weight = 3,
+                                                 color = niceRplots::nice_cols("positive_yellow_100"),
                                                  fillOpacity = 1,
                                                  bringToFront = TRUE),
                     # Add hover labels to the shapes
@@ -80,13 +80,13 @@ create_map <- function(metric_df, unit) {
                                            label_percent(0.1)(map_table$proportion)),
                                     htmltools::HTML),
                     # Set font options
-                    labelOptions = labelOptions(textsize = "12px",
+                    labelOptions = leaflet::labelOptions(textsize = "12px",
                                                 style = list("font-family" = "Inter Regular"))) %>%
         leaflet::addLegend(position = "bottomleft",
                   pal = pal,
                   values = ~map_table$proportion,
                   title = "Uptake",
-                  labFormat = labelFormat(suffix = "%",
+                  labFormat = leaflet::labelFormat(suffix = "%",
                                           transform = function(x) x*100),
                   opacity = 1)
 
