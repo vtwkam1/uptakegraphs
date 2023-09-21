@@ -6,12 +6,12 @@
 create_map <- function(metric_df, unit) {
 
     vars <- list(sub_icb_2019 = list(filter = "Sub-ICB",
-                                     geojson_file = "data/Clinical_Commissioning_Groups_April_2019_Boundaries_EN_BUC_2022_4644984930930678212.geojson",
+                                     geojson_file = system.file("extdata", "Clinical_Commissioning_Groups_April_2019_Boundaries_EN_BUC_2022_4644984930930678212.geojson", package = "uptakegraphs"),
                                      join_col = "ccg19cd",
                                      hover_label = "CCG",
                                      hover_label_col = "ccg19nm"),
                  sub_icb_2023 = list(filter = "Sub-ICB",
-                                     geojson_file = "data/Sub_Integrated_Care_Board_Locations_April_2023_EN_BSC_2087764644089335899.geojson",
+                                     geojson_file = system.file("extdata", "Sub_Integrated_Care_Board_Locations_April_2023_EN_BSC_2087764644089335899.geojson", package = "uptakegraphs"),
                                      join_col = "sicbl23cd",
                                      hover_label = "Sub-ICB location",
                                      hover_label_col = "sicbl23nm"))
