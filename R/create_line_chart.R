@@ -93,6 +93,7 @@ line_chart_proportion <- function(tmp_df, colours) {
 line_chart_count <- function(tmp_df, colours) {
 
     y_breaks <- pretty(c(0, max(tmp_df$indicator)), n = 8)
+
     ymax_pad <- y_breaks[[1]]/5
 
     tmp_df %>%
