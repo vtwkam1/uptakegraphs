@@ -94,8 +94,6 @@ line_chart_count <- function(tmp_df, colours) {
 
     y_breaks <- pretty(c(0, max(tmp_df$indicator)), n = 8)
 
-    ymax_pad <- y_breaks[[1]]/3
-
     tmp_df %>%
         plot_ly(x = ~period_end_date,
                 y = ~indicator,
@@ -138,7 +136,7 @@ line_chart_count <- function(tmp_df, colours) {
             ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
-                         range = c(0, max(y_breaks) + ymax_pad)
+                         tickvals = y_breaks
                          # showgrid = TRUE,
                          # title = list(font = list(size = 12),
                          #              text = "Count",
