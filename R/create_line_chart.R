@@ -4,6 +4,7 @@
 #' @param input_explore_tabs
 #' @param selected_area
 
+
 create_line_chart <- function(filtered_df, input_explore_tabs, selected_area){
 
     tmp_df <- filtered_df %>%
@@ -92,8 +93,6 @@ line_chart_proportion <- function(tmp_df, colours) {
 
 line_chart_count <- function(tmp_df, colours) {
 
-    y_max <- 10^ceiling(max(log10(tmp_df$indicator)))
-
     tmp_df %>%
         plot_ly(x = ~period_end_date,
                 y = ~indicator,
@@ -135,7 +134,7 @@ line_chart_count <- function(tmp_df, colours) {
                          zerolinewidth = 1.5),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
-                         range = ~c(0, y_max),
+                         range = ~c(0, max(tmp_df$indicator) + 1000),
                          showgrid = TRUE,
                          title = list(font = list(size = 12),
                                       text = "Count",
