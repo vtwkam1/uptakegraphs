@@ -40,11 +40,11 @@ create_map <- function(metric_df, unit) {
     # Join our data to the dataframe containing the relevant sub-ICB location shapes. Ensure the
     # dataframe containing the shapes is the first argument in the join, as we want to preserve
     # the class of this table. If not the geometry column containing the shapes will be dropped.
-    map_table <- left_join(shapes, metric_df, by = join_by(!!temp_join_col == "geo_code"))
+    map_table <- left_join(shapes, metric_df, by = join_by(!!temp_join_col == "area_gss_code"))
 
     # Set up colour palette using the NICE sequential palette
     pal <- leaflet::colorBin(colorRampPalette(nice_pal("seq"))(5),
-                    domain = map_table$proportion,
+                    domain = map_table$indicator,
                     bins = 5,
                     reverse = TRUE, # Darker colours for low uptake
                     na.color = nice_cols("black_50"))
@@ -64,7 +64,7 @@ create_map <- function(metric_df, unit) {
         # Add the base map tile
         leaflet::addProviderTiles(provider = "CartoDB.Positron") %>%
         # Add our shapes
-        leaflet::addPolygons(fillColor = ~pal(proportion),
+        leaflet::addPolygons(fillColor = ~pal(indicator),
                     fillOpacity = 1,
                     color = niceRplots::nice_cols("black_100"),
                     weight = 0.5,
@@ -77,14 +77,14 @@ create_map <- function(metric_df, unit) {
                     # Add hover labels to the shapes
                     label = ~lapply(paste0("<strong>", vars[[unit]][["hover_label"]], ": </strong>", map_table[[temp_hover_label_col]],
                                            "<br><strong>Uptake:</strong> ",
-                                           label_percent(0.1)(map_table$proportion)),
+                                           label_percent(0.1)(map_table$indicator)),
                                     htmltools::HTML),
                     # Set font options
                     labelOptions = leaflet::labelOptions(textsize = "12px",
                                                 style = list("font-family" = "Inter Regular"))) %>%
         leaflet::addLegend(position = "bottomleft",
                   pal = pal,
-                  values = ~map_table$proportion,
+                  values = ~map_table$indicator,
                   title = "Uptake",
                   labFormat = leaflet::labelFormat(suffix = "%",
                                           transform = function(x) x*100),
