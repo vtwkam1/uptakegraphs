@@ -128,7 +128,7 @@ line_chart_count <- function(tmp_df, colours) {
                          # Set first tick
                          tick0 = ~min(period_end_date)
                          # Tick every 6 months
-                         #dtick = "M6",
+                         # dtick = "M6",
                          # showgrid = FALSE,
                          # title = list(font = list(size = 12),
                          #              text = "",
@@ -140,7 +140,7 @@ line_chart_count <- function(tmp_df, colours) {
             ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
-                         tick0 = ~0
+                         tick0 = 0
                          # showgrid = TRUE,
                          # title = list(font = list(size = 12),
                          #              text = "Count",
