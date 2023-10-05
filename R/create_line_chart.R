@@ -6,7 +6,10 @@
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4c12ecfcb2c49f34780a2c7b2bab7cb4ab8df9ab
 create_line_chart <- function(filtered_df, input_explore_tabs, selected_area){
 
     tmp_df <- filtered_df %>%
