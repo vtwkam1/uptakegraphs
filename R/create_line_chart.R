@@ -136,7 +136,9 @@ line_chart_count <- function(tmp_df, colours) {
             ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
-                         tickvals = y_breaks
+                         tickvals = y_breaks,
+                         tickmode = "array",
+                         ticktext = y_breaks
                          # showgrid = TRUE,
                          # title = list(font = list(size = 12),
                          #              text = "Count",
