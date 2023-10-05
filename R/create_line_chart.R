@@ -113,7 +113,6 @@ line_chart_count <- function(tmp_df, colours) {
                                     "<br>Count: ",
                                     label_comma()(indicator))) %>%
         layout(#showlegend = FALSE,
-            hovermode = "x unified",
             xaxis = list(type = "date", # Specify x axis is date
                          # Show x axis ticks
                          ticks = "outside",
