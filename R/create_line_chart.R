@@ -5,6 +5,7 @@
 #' @param selected_area
 
 
+
 create_line_chart <- function(filtered_df, input_explore_tabs, selected_area){
 
     tmp_df <- filtered_df %>%
@@ -62,7 +63,7 @@ line_chart_proportion <- function(tmp_df, colours) {
                          tick0 = ~min(period_end_date),
                          # Tick every 6 months
                          # dtick = "M6",
-                         showgrid = FALSE
+                         # showgrid = FALSE
                          # title = list(font = list(size = 12),
                          #              text = "",
                          #              standoff = 10),
@@ -124,27 +125,28 @@ line_chart_count <- function(tmp_df, colours) {
                          tick0 = ~min(period_end_date),
                          # Tick every 6 months
                          #dtick = "M6",
-                         showgrid = FALSE,
-                         title = list(font = list(size = 12),
-                                      text = "",
-                                      standoff = 10),
-                         tickfont = list(size = 12),
-                         gridwidth = 1.5,
-                         gridcolor = "#e6e6e6",
-                         zerolinewidth = 1.5),
+                         # showgrid = FALSE,
+                         # title = list(font = list(size = 12),
+                         #              text = "",
+                         #              standoff = 10),
+                         # tickfont = list(size = 12),
+                         # gridwidth = 1.5,
+                         # gridcolor = "#e6e6e6",
+                         # zerolinewidth = 1.5
+            ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
-                         range = ~c(0, max(tmp_df$indicator) + 1000),
-                         showgrid = TRUE,
-                         title = list(font = list(size = 12),
-                                      text = "Count",
-                                      standoff = 5),
-                         tickfont = list(size = 12),
-                         gridwidth = 1.5,
-                         gridcolor = "#e6e6e6",
-                         zerolinewidth = 1.5),
+                         tick0 = ~0,
+                         # showgrid = TRUE,
+                         # title = list(font = list(size = 12),
+                         #              text = "Count",
+                         #              standoff = 5),
+                         # tickfont = list(size = 12),
+                         # gridwidth = 1.5,
+                         # gridcolor = "#e6e6e6",
+                         # zerolinewidth = 1.5
+            ),
             legend = list(font = list(size = 12))) %>%
-        config(modeBarButtonsToRemove = c("zoom", "pan", "select", "lasso", "zoomIn2d",
-                                          "zoomOut2d", "autoscale", "resetscale", "hovercompare", "hoverclosest"),
-               displaylogo = FALSE)
+        nice_plotly_theme(x_title = "",
+                          y_title = "Count")
 }
