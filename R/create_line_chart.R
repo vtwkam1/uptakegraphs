@@ -93,6 +93,7 @@ line_chart_proportion <- function(tmp_df, colours) {
 line_chart_count <- function(tmp_df, colours) {
 
     y_breaks <- pretty(c(0, max(tmp_df$indicator)), n = 8)
+    ymax_pad <- y_breaks[[1]]/10
 
     tmp_df %>%
         plot_ly(x = ~period_end_date,
@@ -113,7 +114,7 @@ line_chart_count <- function(tmp_df, colours) {
                                     "<br>",
                                     format(period_end_date, "%b %Y"),
                                     "<br>Count: ",
-                                    indicator)) %>%
+                                    label_comma()(indicator))) %>%
         layout(#showlegend = FALSE,
             hovermode = "x unified",
             xaxis = list(type = "date", # Specify x axis is date
@@ -136,7 +137,7 @@ line_chart_count <- function(tmp_df, colours) {
             ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
-                         range = c(0, max(y_breaks))
+                         range = c(0, max(y_breaks) + ymax_pad)
                          # showgrid = TRUE,
                          # title = list(font = list(size = 12),
                          #              text = "Count",
@@ -150,3 +151,4 @@ line_chart_count <- function(tmp_df, colours) {
         nice_plotly_theme(x_title = "",
                           y_title = "Count")
 }
+
