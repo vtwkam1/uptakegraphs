@@ -25,7 +25,7 @@ create_geog_bar <- function(df, input_geog_tabs){
                 hovertext = ~paste0("Name: ", area_name,
                                     "<br>Numerator: ", scales::label_comma()(numerator),
                                     "<br>Denominator: ", scales::label_comma()(denominator),
-                                    "<br>indicator: ", scales::label_percent(accuracy = 0.1)(indicator))) %>%
+                                    "<br>Proportion: ", scales::label_percent(accuracy = 0.1)(indicator))) %>%
         add_lines(y = median_var*100,
                   name = "National Median",
                   line = list(dash = 'dot',
@@ -44,7 +44,7 @@ create_geog_bar <- function(df, input_geog_tabs){
         # Add NICE theme and set axis titles
         nice_plotly_theme(x_title = paste0(input_geog_tabs, "s"),
                           axis_ticks = "none",
-                          y_title = "indicator (%)",
+                          y_title = "Proportion (%)",
                           show_legend = FALSE)
 
     return(tmp)
