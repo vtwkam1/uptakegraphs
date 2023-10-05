@@ -9,14 +9,14 @@ create_geog_bar <- function(df, input_geog_tabs){
     median_var <- df %>%
         filter(metric_category == input_geog_tabs,
                period_end_date == max(period_end_date)) %>%
-        pull(proportion) %>%
+        pull(indicator) %>%
         median(na.rm = TRUE)
 
     tmp <- df %>%
         filter(metric_category == input_geog_tabs,
                period_end_date == max(period_end_date)) %>%
-        plot_ly(x = ~reorder(metric_category_group, proportion),
-                y = ~proportion*100,
+        plot_ly(x = ~reorder(metric_category_group, indicator),
+                y = ~indicator*100,
                 type = "bar",
                 # Edit hover text
                 color = I("#228096"),
@@ -26,7 +26,7 @@ create_geog_bar <- function(df, input_geog_tabs){
                                     # "<br>ODS code: ", metric_category_group,
                                     "<br>Numerator: ", scales::label_comma()(numerator),
                                     "<br>Denominator: ", scales::label_comma()(denominator),
-                                    "<br>Proportion: ", scales::label_percent(accuracy = 0.1)(proportion))) %>%
+                                    "<br>indicator: ", scales::label_percent(accuracy = 0.1)(indicator))) %>%
         add_lines(y = median_var*100,
                   name = "National Median",
                   line = list(dash = 'dot',
@@ -45,7 +45,7 @@ create_geog_bar <- function(df, input_geog_tabs){
         # Add NICE theme and set axis titles
         nice_plotly_theme(x_title = paste0(input_geog_tabs, "s"),
                           axis_ticks = "none",
-                          y_title = "Proportion (%)",
+                          y_title = "indicator (%)",
                           show_legend = FALSE)
 
     return(tmp)
