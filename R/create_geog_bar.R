@@ -15,15 +15,14 @@ create_geog_bar <- function(df, input_geog_tabs){
     tmp <- df %>%
         filter(metric_category == input_geog_tabs,
                period_end_date == max(period_end_date)) %>%
-        plot_ly(x = ~reorder(metric_category_group, indicator),
+        plot_ly(x = ~reorder(area_name, indicator),
                 y = ~indicator*100,
                 type = "bar",
                 # Edit hover text
                 color = I("#228096"),
                 stroke = I("#FFFFFF"),
                 hoverinfo = "text",
-                hovertext = ~paste0("Name: ", metric_category_group,
-                                    # "<br>ODS code: ", metric_category_group,
+                hovertext = ~paste0("Name: ", area_name,
                                     "<br>Numerator: ", scales::label_comma()(numerator),
                                     "<br>Denominator: ", scales::label_comma()(denominator),
                                     "<br>indicator: ", scales::label_percent(accuracy = 0.1)(indicator))) %>%
