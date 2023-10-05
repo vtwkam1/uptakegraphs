@@ -92,7 +92,7 @@ line_chart_proportion <- function(tmp_df, colours) {
 
 line_chart_count <- function(tmp_df, colours) {
 
-    y_breaks <- pretty(c(0, max(tmp_df$indicator)), n = 8)
+    y_breaks <- as.list(pretty(c(0, max(tmp_df$indicator)), n = 8))
 
     tmp_df %>%
         plot_ly(x = ~period_end_date,
