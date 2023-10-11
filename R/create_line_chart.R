@@ -58,9 +58,9 @@ line_chart_proportion <- function(tmp_df, colours) {
                          # Format ticks as abbreviated month name and full year, e.g. Jan 2018
                          tickformat = "%b\n%Y",
                          # Set first tick
-                         tick0 = ~min(period_end_date)
+                         tick0 = ~min(period_end_date),
                          # Tick every 6 months
-                         # dtick = "M6",
+                         dtick = "M6"
                          # showgrid = FALSE
                          # title = list(font = list(size = 12),
                          #              text = "",
@@ -119,9 +119,9 @@ line_chart_count <- function(tmp_df, colours) {
                          # Format ticks as abbreviated month name and full year, e.g. Jan 2018
                          tickformat = "%b\n%Y",
                          # Set first tick
-                         tick0 = ~min(period_end_date)
+                         tick0 = ~min(period_end_date),
                          # Tick every 6 months
-                         # dtick = "M6",
+                         dtick = "M6"
                          # showgrid = FALSE,
                          # title = list(font = list(size = 12),
                          #              text = "",
