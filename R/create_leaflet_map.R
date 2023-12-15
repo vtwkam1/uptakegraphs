@@ -13,6 +13,8 @@ create_leaflet_map <- function(metric_df, input_geog_tabs) {
         } else if (max_year == 2023) {
             create_map(metric_df, "sub_icb_2023")
         }
+    } else if (input_geog_tabs == "ICB") {
+        create_map(metric_df, "icb")
     }
 
 }

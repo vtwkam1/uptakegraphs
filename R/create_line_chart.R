@@ -4,20 +4,31 @@
 #' @param input_explore_tabs
 #' @param selected_area
 
-create_line_chart <- function(filtered_df, input_explore_tabs, selected_area){
+create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_name = NULL){
 
-    tmp_df <- filtered_df %>%
-        filter(metric_category == input_explore_tabs,
-               area_name == selected_area)
+    # Filter data for only metric_category of interest, e.g. "Ethnicity", "Sex"
+    if (is.null(selected_area_name)) {
+        tmp_df <- filtered_df %>%
+            filter(metric_category == input_explore_tabs)
+    } else {
+        # If specific area selected, keep its data and national data
+        tmp_df <- filtered_df %>%
+            filter(metric_category == input_explore_tabs | (area_name == "England" & metric_category == "All")) %>%
+            # Rename metric_category_group with area_name for ease of plotting
+            mutate(metric_category_group = factor(area_name) %>% fct_relevel(c("England")))
+    }
 
+    # Get colours for the number of unique metric_category_groups in this metric_category
     colours <- c("#228096", "#D07B4D", "#37906D", "#00436C", "#801650", "#3D3D3D", "#A285D1", "#EAD054") %>%
         .[1:length(unique(tmp_df$metric_category_group))]
 
+    # Get indicator type for this metric (i.e. proportion or count)
     indicator_type <- tmp_df %>%
         distinct(indicator_type) %>%
         pull(indicator_type) %>%
         pluck(1)
 
+    # Generate count or proportion chart, depending on metric indicator type
     if (indicator_type == "Proportion") {
         line_chart_proportion(tmp_df, colours)
     } else if (indicator_type == "Count") {
@@ -26,6 +37,15 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area){
 }
 
 line_chart_proportion <- function(tmp_df, colours) {
+
+    # If the data spans four years or more, only label every year on the x-axis
+    if ((interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / years(1)) >= 4) {
+        x_interval <- "M12"
+    } else {
+        # Label every 6 months
+        x_interval <- "M6"
+    }
+
     tmp_df %>%
         plot_ly(x = ~period_end_date,
                 y = ~indicator*100,
@@ -60,7 +80,7 @@ line_chart_proportion <- function(tmp_df, colours) {
                          # Set first tick
                          tick0 = ~min(period_end_date),
                          # Tick every 6 months
-                         dtick = "M6"
+                         dtick = x_interval
                          # showgrid = FALSE
                          # title = list(font = list(size = 12),
                          #              text = "",
@@ -92,6 +112,14 @@ line_chart_proportion <- function(tmp_df, colours) {
 
 line_chart_count <- function(tmp_df, colours) {
 
+    # If the data spans more than four years, only label every year on the x-axis
+    if ((interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / years(1)) > 4) {
+        x_interval <- "M12"
+    } else {
+        # Label every 6 months
+        x_interval <- "M6"
+    }
+
     tmp_df %>%
         plot_ly(x = ~period_end_date,
                 y = ~indicator,
@@ -121,7 +149,7 @@ line_chart_count <- function(tmp_df, colours) {
                          # Set first tick
                          tick0 = ~min(period_end_date),
                          # Tick every 6 months
-                         dtick = "M6"
+                         dtick = x_interval
                          # showgrid = FALSE,
                          # title = list(font = list(size = 12),
                          #              text = "",
@@ -147,4 +175,3 @@ line_chart_count <- function(tmp_df, colours) {
         nice_plotly_theme(x_title = "",
                           y_title = "Count")
 }
-
