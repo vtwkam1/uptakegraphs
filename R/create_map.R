@@ -1,7 +1,29 @@
-#' Create map
+#' Create a map in leaflet.
+#'
+#' @description
+#'
+#' * `create_leaflet_map()` runs `create_map()` at the right geographical level (ICB or sub-ICB).
+#' * `create_map()` contains the code to create a map in leaflet.
 #'
 #' @param metric_df
+#' @param input_geog_tabs
 #' @param unit
+
+create_leaflet_map <- function(metric_df, input_geog_tabs) {
+
+    max_year <- year(max(metric_df$period_end_date))
+
+    if (input_geog_tabs == "Sub-ICB") {
+        if (max_year == 2019) {
+            create_map(metric_df, "sub_icb_2019")
+        } else if (max_year == 2023) {
+            create_map(metric_df, "sub_icb_2023")
+        }
+    } else if (input_geog_tabs == "ICB") {
+        create_map(metric_df, "icb")
+    }
+
+}
 
 create_map <- function(metric_df, unit) {
 
