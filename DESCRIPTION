@@ -1,17 +1,19 @@
 Package: uptakegraphs
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
+Title: Functions used by the Impact team
+Version: 0.0.1
+Authors@R: 
+    person(given = "Vanessa", family = "Kam", role = c("aut", "cre"))
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: Plotting and cleaning functions for the Impact team
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
     dplyr,
+    magrittr,
     janitor,
     leaflet,
     magrittr,
@@ -19,6 +21,7 @@ Imports:
     plotly,
     rmapshaper,
     scales,
-    sf
+    sf,
+    lubridate
 URL: https://github.com/vtwkam1/uptakegraphs
 BugReports: https://github.com/vtwkam1/uptakegraphs/issues

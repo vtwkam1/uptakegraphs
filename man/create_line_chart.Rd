@@ -2,10 +2,42 @@
 % Please edit documentation in R/create_line_chart.R
 \name{create_line_chart}
 \alias{create_line_chart}
+\alias{line_chart_proportion}
+\alias{line_chart_count}
 \title{Create line chart}
 \usage{
-create_line_chart(filtered_df, input_explore_tabs)
+create_line_chart(filtered_df, input_explore_tabs, selected_area_name = NULL)
+
+line_chart_proportion(tmp_df, colours)
+
+line_chart_count(tmp_df, colours)
+}
+\arguments{
+\item{filtered_df}{Dataframe}
+
+\item{input_explore_tabs}{What data to plot (e.g. All, ICB, Ethnicity).}
+
+\item{selected_area_name}{Defaults to NULL. If a specific area is selected, e.g. Greater Manchester ICB,
+plots that area's data only.}
+}
+\value{
+Plotly chart
 }
 \description{
-Create line chart
+Creates a line chart with time (\code{period_end_date} column) on the x-axis
+and uptake (\code{indicator} column) on the y-axis. If groups are supplied,
+(more than one level in \code{metric_category_group}), each will be plotted in a different colour.
+
+\code{line_chart_proportion()} plots proportion data. \code{indicator} column values should
+be between 0 and 1. Y-axis is 0-100\%.
+
+\code{line_chart_count()} plots count data. \code{indicator} column values can be any numerical
+value. Y-axis is from 0 to whatever Plotly thinks is appropriate.
+
+\code{create_line_chart()}:
+\itemize{
+\item Filters data for the appropriate indicator (e.g. All, ICB, Ethnicity)
+\item Selects the colours for the number of groups
+\item Runs the correct line_chart_ function
+}
 }

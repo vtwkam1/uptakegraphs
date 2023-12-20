@@ -1,13 +1,19 @@
-#' Create a map in leaflet.
+#' Create a heat map in leaflet.
 #'
 #' @description
+#' `create_leaflet_map()` runs `create_map()` at the right geographical level (ICB or sub-ICB).
 #'
-#' * `create_leaflet_map()` runs `create_map()` at the right geographical level (ICB or sub-ICB).
-#' * `create_map()` contains the code to create a map in leaflet.
+#' `create_map()` contains the code to create a map in leaflet.
 #'
-#' @param metric_df
-#' @param input_geog_tabs
-#' @param unit
+#' @param metric_df Dataframe
+#' @param input_geog_tabs Area level (e.g. ICB, provider) to plot.
+#' @param unit Area level (e.g. ICB, provider) to plot.
+#'
+#' @return Leaflet object
+#'
+#' @examples
+#'
+#' @export
 
 create_leaflet_map <- function(metric_df, input_geog_tabs) {
 
@@ -24,6 +30,8 @@ create_leaflet_map <- function(metric_df, input_geog_tabs) {
     }
 
 }
+
+#' @rdname create_leaflet_map
 
 create_map <- function(metric_df, unit) {
 

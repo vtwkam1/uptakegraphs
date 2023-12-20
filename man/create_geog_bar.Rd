@@ -2,10 +2,42 @@
 % Please edit documentation in R/create_geog_bar.R
 \name{create_geog_bar}
 \alias{create_geog_bar}
+\alias{geog_bar_proportion}
+\alias{geog_bar_count}
 \title{Create bar chart for geographies}
 \usage{
-create_geog_bar(df, ods_lookup_df, input_geog_tabs)
+create_geog_bar(df, input_geog_tabs)
+
+geog_bar_proportion(df, input_geog_tabs, median_var)
+
+geog_bar_count(df, input_geog_tabs, median_var)
+}
+\arguments{
+\item{df}{Dataframe}
+
+\item{input_geog_tabs}{Area level (e.g. ICB, provider) to plot.}
+
+\item{median_var}{Median indicator value for given area level split.}
+}
+\value{
+Plotly chart
 }
 \description{
-Create bar chart for geographies
+Creates a bar chart with all the area level units (e.g. ICBs, providers) on the x-axis,
+and their uptake on the y-axis. Also plots the median uptake value as a horizontal line.
+
+\code{geog_bar_proportion()} plots proportion data. \code{indicator} column values should
+be between 0 and 1. Y-axis is 0-100\%.
+
+\code{geog_bar_count()} plots count data. \code{indicator} column values can be any numerical
+value. Y-axis is from 0 to whatever Plotly thinks is appropriate.
+
+\code{create_geog_bar()}:
+\itemize{
+\item Filters data for the appropriate indicator (e.g. ICB, All, Ethnicity)
+\item selects the last year of data for proportion data or
+the latest time period of data for count data
+\item Calculates the median
+\item Runs the correct geog_bar_ function
+}
 }

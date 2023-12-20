@@ -1,8 +1,31 @@
 #' Create line chart
 #'
-#' @param filtered_df
-#' @param input_explore_tabs
-#' @param selected_area
+#' @description
+#' Creates a line chart with time (`period_end_date` column) on the x-axis
+#' and uptake (`indicator` column) on the y-axis. If groups are supplied,
+#' (more than one level in `metric_category_group`), each will be plotted in a different colour.
+#'
+#' `line_chart_proportion()` plots proportion data. `indicator` column values should
+#' be between 0 and 1. Y-axis is 0-100%.
+#'
+#' `line_chart_count()` plots count data. `indicator` column values can be any numerical
+#' value. Y-axis is from 0 to whatever Plotly thinks is appropriate.
+#'
+#' `create_line_chart()`:
+#' * Filters data for the appropriate indicator (e.g. All, ICB, Ethnicity)
+#' * Selects the colours for the number of groups
+#' * Runs the correct line_chart_ function
+#'
+#' @param filtered_df Dataframe
+#' @param input_explore_tabs What data to plot (e.g. All, ICB, Ethnicity).
+#' @param selected_area_name Defaults to NULL. If a specific area is selected, e.g. Greater Manchester ICB,
+#' plots that area's data only.
+#'
+#' @return Plotly chart
+#'
+#' @examples
+#'
+#' @export
 
 create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_name = NULL){
 
@@ -15,7 +38,7 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
         tmp_df <- filtered_df %>%
             filter(metric_category == input_explore_tabs | (area_name == "England" & metric_category == "All")) %>%
             # Rename metric_category_group with area_name for ease of plotting
-            mutate(metric_category_group = factor(area_name) %>% fct_relevel(c("England")))
+            mutate(metric_category_group = factor(area_name) %>% forcats::fct_relevel(c("England")))
     }
 
     # Get colours for the number of unique metric_category_groups in this metric_category
@@ -26,7 +49,7 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
     indicator_type <- tmp_df %>%
         distinct(indicator_type) %>%
         pull(indicator_type) %>%
-        pluck(1)
+        purrr::pluck(1)
 
     # Generate count or proportion chart, depending on metric indicator type
     if (indicator_type == "Proportion") {
@@ -36,10 +59,12 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
     }
 }
 
+#' @rdname create_line_chart
+
 line_chart_proportion <- function(tmp_df, colours) {
 
     # If the data spans four years or more, only label every year on the x-axis
-    if ((interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / years(1)) >= 4) {
+    if ((lubridate::interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / years(1)) >= 4) {
         x_interval <- "M12"
     } else {
         # Label every 6 months
@@ -47,7 +72,7 @@ line_chart_proportion <- function(tmp_df, colours) {
     }
 
     tmp_df %>%
-        plot_ly(x = ~period_end_date,
+        plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator*100,
                 color = ~metric_category_group,
                 type = "scatter",
@@ -106,9 +131,11 @@ line_chart_proportion <- function(tmp_df, colours) {
         # config(modeBarButtonsToRemove = c("zoom", "pan", "select", "lasso", "zoomIn2d",
         #                                   "zoomOut2d", "autoscale", "resetscale", "hovercompare", "hoverclosest"),
         #        displaylogo = FALSE)
-        nice_plotly_theme(x_title = "",
+        niceRplots::nice_plotly_theme(x_title = "",
                           y_title = "Proportion (%)")
 }
+
+#' @rdname create_line_chart
 
 line_chart_count <- function(tmp_df, colours) {
 
