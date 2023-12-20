@@ -3,7 +3,7 @@ Type: Package
 Title: Functions used by the Impact team
 Version: 0.0.1
 Authors@R: 
-    person(given = "Vanessa", family = "Kam", role = c("aut", "cre"))
+    person(given = "Vanessa", family = "Kam", email = "vanessa.kam@nice.org.uk", role = c("aut", "cre"))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Plotting and cleaning functions for the Impact team
 License: MIT + file LICENSE
@@ -25,3 +25,6 @@ Imports:
     lubridate
 URL: https://github.com/vtwkam1/uptakegraphs
 BugReports: https://github.com/vtwkam1/uptakegraphs/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
