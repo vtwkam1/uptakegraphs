@@ -17,7 +17,7 @@
 
 create_leaflet_map <- function(metric_df, input_geog_tabs) {
 
-    max_year <- year(max(metric_df$period_end_date))
+    max_year <- lubridate::year(max(metric_df$period_end_date))
 
     if (input_geog_tabs == "Sub-ICB") {
         if (max_year == 2019) {
@@ -32,6 +32,7 @@ create_leaflet_map <- function(metric_df, input_geog_tabs) {
 }
 
 #' @rdname create_leaflet_map
+#' @export
 
 create_map <- function(metric_df, unit) {
 
@@ -54,26 +55,26 @@ create_map <- function(metric_df, unit) {
 
     # Keep only latest year of data
     metric_df <- metric_df %>%
-        filter(metric_category == vars[[unit]][["filter"]],
-               period_start_date > max(period_start_date) - years(1)) %>%
-        group_by(area_name, area_gss_code) %>%
+        dplyr::filter(metric_category == vars[[unit]][["filter"]],
+               period_start_date > max(period_start_date) - lubridate::years(1)) %>%
+        dplyr::group_by(area_name, area_gss_code) %>%
         # Possible that some areas will not have full year of data
-        summarise(period_start_date = min(period_start_date),
+        dplyr::summarise(period_start_date = min(period_start_date),
                   period_end_date = max(period_end_date),
                   numerator = sum(numerator),
                   denominator = sum(denominator),
                   .groups = "drop") %>%
-        mutate(indicator = numerator/denominator)
+        dplyr::mutate(indicator = numerator/denominator)
 
     # Load in the a .geoJSON file containing the relevant geographical shapes and simplify
     # these to increase plotting speed. In the code below, we are keeping 10% of the total points.
     shapes <- sf::read_sf(vars[[unit]][["geojson_file"]]) %>%
-        ms_simplify(keep = 0.1,
+        rmapshaper::ms_simplify(keep = 0.1,
                     # Stops small polygons from disappearing
                     keep_shapes = TRUE) %>%
-        st_transform('+proj=longlat +datum=WGS84')
+        sf::st_transform('+proj=longlat +datum=WGS84')
 
-    names(shapes) <- make_clean_names(names(shapes))
+    names(shapes) <- janitor::make_clean_names(names(shapes))
 
     # Combine these shapes into a single shape for the whole of England.
     # Setting the sf_use_s2() function to FALSE prevents the use of spherical geometry
@@ -85,13 +86,13 @@ create_map <- function(metric_df, unit) {
     # Join our data to the dataframe containing the relevant sub-ICB location shapes. Ensure the
     # dataframe containing the shapes is the first argument in the join, as we want to preserve
     # the class of this table. If not the geometry column containing the shapes will be dropped.
-    map_table <- left_join(shapes, metric_df, by = join_by(!!temp_join_col == "area_gss_code"))
+    map_table <- dplyr::left_join(shapes, metric_df, by = dplyr::join_by(!!temp_join_col == "area_gss_code"))
 
     # Set up colour palette using the NICE sequential palette
-    pal <- colorBin(colorRampPalette(nice_pal("seq"))(5),
+    pal <- leaflet::colorBin(grDevices::colorRampPalette(nice_pal("seq"))(5),
                     domain = map_table$indicator,
                     bins = 5,
-                    na.color = nice_cols("black_50"))
+                    na.color = niceRplots::nice_cols("black_50"))
 
     # Set which column should be used for the place's hover label
     temp_hover_label_col <- vars[[unit]][["hover_label_col"]]
@@ -99,38 +100,38 @@ create_map <- function(metric_df, unit) {
     # Create chart
     leaflet_map <- map_table %>%
         # Set up degree of zoom using controls and scroll
-        leaflet(options = leafletOptions(zoomDelta = 0.25,
+        leaflet::leaflet(options = leaflet::leafletOptions(zoomDelta = 0.25,
                                          zoomSnap = 0.25)) %>%
         # Set view to centre on England and set appropriate zoom
-        setView(lat = 53,
+        leaflet::setView(lat = 53,
                 lng = -1.5,
                 zoom = 5.8) %>%
         # Add the base map tile
-        addProviderTiles(provider = "CartoDB.Positron") %>%
+        leaflet::addProviderTiles(provider = "CartoDB.Positron") %>%
         # Add our shapes
-        addPolygons(fillColor = ~pal(indicator),
+        leaflet::addPolygons(fillColor = ~pal(indicator),
                     fillOpacity = 1,
-                    color = nice_cols("black_100"),
+                    color = niceRplots::nice_cols("black_100"),
                     weight = 0.5,
                     opacity = 1,
                     # Add functionality to highlight shape when hovered over
-                    highlight = highlightOptions(weight = 3,
-                                                 color = nice_cols("positive_yellow_100"),
+                    highlight = leaflet::highlightOptions(weight = 3,
+                                                 color = niceRplots::nice_cols("positive_yellow_100"),
                                                  fillOpacity = 1,
                                                  bringToFront = TRUE),
                     # Add hover labels to the shapes
                     label = ~lapply(paste0("<strong>", vars[[unit]][["hover_label"]], ": </strong>", map_table[[temp_hover_label_col]],
                                            "<br><strong>Uptake:</strong> ",
-                                           label_percent(0.1)(map_table$indicator)),
+                                           scales::label_percent(0.1)(map_table$indicator)),
                                     htmltools::HTML),
                     # Set font options
-                    labelOptions = labelOptions(textsize = "12px",
+                    labelOptions = leaflet::labelOptions(textsize = "12px",
                                                 style = list("font-family" = "Inter Regular"))) %>%
-        addLegend(position = "bottomleft",
+        leaflet::addLegend(position = "bottomleft",
                   pal = pal,
                   values = ~map_table$indicator,
                   title = "Uptake",
-                  labFormat = labelFormat(suffix = "%",
+                  labFormat = leaflet::labelFormat(suffix = "%",
                                           transform = function(x) x*100),
                   opacity = 1)
 

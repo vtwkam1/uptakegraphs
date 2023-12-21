@@ -5,7 +5,7 @@ Version: 0.0.1
 Authors@R: 
     person(given = "Vanessa", family = "Kam", email = "vanessa.kam@nice.org.uk", role = c("aut", "cre"))
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: Plotting and cleaning functions for the Impact team
+Description: Plotting and cleaning functions for the Impact team.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -13,16 +13,20 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
     dplyr,
-    magrittr,
     janitor,
     leaflet,
-    magrittr,
     niceRplots,
     plotly,
     rmapshaper,
     scales,
     sf,
-    lubridate
+    lubridate,
+    purrr,
+    stats,
+    grDevices,
+    htmltools,
+    forcats,
+    magrittr
 URL: https://github.com/vtwkam1/uptakegraphs
 BugReports: https://github.com/vtwkam1/uptakegraphs/issues
 Suggests: 

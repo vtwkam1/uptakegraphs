@@ -32,13 +32,13 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
     # Filter data for only metric_category of interest, e.g. "Ethnicity", "Sex"
     if (is.null(selected_area_name)) {
         tmp_df <- filtered_df %>%
-            filter(metric_category == input_explore_tabs)
+            dplyr::filter(metric_category == input_explore_tabs)
     } else {
         # If specific area selected, keep its data and national data
         tmp_df <- filtered_df %>%
-            filter(metric_category == input_explore_tabs | (area_name == "England" & metric_category == "All")) %>%
+            dplyr::filter(metric_category == input_explore_tabs | (area_name == "England" & metric_category == "All")) %>%
             # Rename metric_category_group with area_name for ease of plotting
-            mutate(metric_category_group = factor(area_name) %>% forcats::fct_relevel(c("England")))
+            dplyr::mutate(metric_category_group = factor(area_name) %>% forcats::fct_relevel(c("England")))
     }
 
     # Get colours for the number of unique metric_category_groups in this metric_category
@@ -47,8 +47,8 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
 
     # Get indicator type for this metric (i.e. proportion or count)
     indicator_type <- tmp_df %>%
-        distinct(indicator_type) %>%
-        pull(indicator_type) %>%
+        dplyr::distinct(indicator_type) %>%
+        dplyr::pull(indicator_type) %>%
         purrr::pluck(1)
 
     # Generate count or proportion chart, depending on metric indicator type
@@ -60,11 +60,12 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
 }
 
 #' @rdname create_line_chart
+#' @export
 
 line_chart_proportion <- function(tmp_df, colours) {
 
     # If the data spans four years or more, only label every year on the x-axis
-    if ((lubridate::interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / years(1)) >= 4) {
+    if ((lubridate::interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / lubridate::years(1)) >= 4) {
         x_interval <- "M12"
     } else {
         # Label every 6 months
@@ -95,7 +96,7 @@ line_chart_proportion <- function(tmp_df, colours) {
                                     scales::label_comma()(denominator),
                                     "<br>Proportion (%): ",
                                     round(indicator*100, 1))) %>%
-        layout(#showlegend = FALSE,
+        plotly::layout(#showlegend = FALSE,
             # hovermode = "x unified",
             xaxis = list(type = "date", # Specify x axis is date
                          # Show x axis ticks
@@ -136,11 +137,12 @@ line_chart_proportion <- function(tmp_df, colours) {
 }
 
 #' @rdname create_line_chart
+#' @export
 
 line_chart_count <- function(tmp_df, colours) {
 
     # If the data spans more than four years, only label every year on the x-axis
-    if ((interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / years(1)) > 4) {
+    if ((lubridate::interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / lubridate::years(1)) > 4) {
         x_interval <- "M12"
     } else {
         # Label every 6 months
@@ -148,7 +150,7 @@ line_chart_count <- function(tmp_df, colours) {
     }
 
     tmp_df %>%
-        plot_ly(x = ~period_end_date,
+        plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator,
                 color = ~metric_category_group,
                 type = "scatter",
@@ -166,8 +168,8 @@ line_chart_count <- function(tmp_df, colours) {
                                     "<br>",
                                     format(period_end_date, "%b %Y"),
                                     "<br>Count: ",
-                                    label_comma()(indicator))) %>%
-        layout(#showlegend = FALSE,
+                                    scales::label_comma()(indicator))) %>%
+        plotly::layout(#showlegend = FALSE,
             xaxis = list(type = "date", # Specify x axis is date
                          # Show x axis ticks
                          ticks = "outside",
@@ -199,6 +201,6 @@ line_chart_count <- function(tmp_df, colours) {
                          # zerolinewidth = 1.5
             ),
             legend = list(font = list(size = 12))) %>%
-        nice_plotly_theme(x_title = "",
+        niceRplots::nice_plotly_theme(x_title = "",
                           y_title = "Count")
 }
