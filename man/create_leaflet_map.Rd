@@ -5,12 +5,12 @@
 \alias{create_map}
 \title{Create a heat map in leaflet.}
 \usage{
-create_leaflet_map(metric_df, input_geog_tabs)
+create_leaflet_map(df, input_geog_tabs)
 
-create_map(metric_df, unit)
+create_map(df, unit)
 }
 \arguments{
-\item{metric_df}{Dataframe}
+\item{df}{Dataframe}
 
 \item{input_geog_tabs}{Area level (e.g. ICB, provider) to plot.}
 

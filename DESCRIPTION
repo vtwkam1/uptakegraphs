@@ -1,34 +1,41 @@
-Package: uptakegraphs
 Type: Package
+Package: uptakegraphs
 Title: Functions used by the Impact team
 Version: 0.0.1
 Authors@R: 
-    person(given = "Vanessa", family = "Kam", email = "vanessa.kam@nice.org.uk", role = c("aut", "cre"))
+    person("Vanessa", "Kam", , "vanessa.kam@nice.org.uk", role = c("aut", "cre"))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Plotting and cleaning functions for the Impact team.
 License: MIT + file LICENSE
+URL: https://github.com/vtwkam1/uptakegraphs
+BugReports: https://github.com/vtwkam1/uptakegraphs/issues
+Imports: 
+    cli,
+    dplyr (>= 1.0.0),
+    forcats,
+    glue,
+    grDevices,
+    htmltools,
+    janitor,
+    leaflet,
+    lifecycle,
+    lubridate,
+    magrittr,
+    niceRplots (>= 0.0.0.9000),
+    plotly,
+    purrr,
+    rlang,
+    rmapshaper,
+    scales,
+    sf,
+    stats,
+    withr
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Imports: 
-    dplyr,
-    janitor,
-    leaflet,
-    niceRplots,
-    plotly,
-    rmapshaper,
-    scales,
-    sf,
-    lubridate,
-    purrr,
-    stats,
-    grDevices,
-    htmltools,
-    forcats,
-    magrittr
-URL: https://github.com/vtwkam1/uptakegraphs
-BugReports: https://github.com/vtwkam1/uptakegraphs/issues
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+Remotes:  
+    NICE-Data-and-Analytics/niceRplots

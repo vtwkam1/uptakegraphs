@@ -33,23 +33,23 @@ create_line_chart <- function(df, input_explore_tabs, selected_area_name = NULL)
     # Filter data for only metric_category of interest, e.g. "Ethnicity", "Sex"
     if (is.null(selected_area_name)) {
         tmp_df <- df %>%
-            dplyr::filter(metric_category == input_explore_tabs)
+            dplyr::filter(.data$metric_category == input_explore_tabs)
     } else {
         # If specific area selected, keep its data and national data
         tmp_df <- df %>%
-            dplyr::filter(metric_category == input_explore_tabs | (area_name == "England" & metric_category == "All")) %>%
+            dplyr::filter(.data$metric_category == input_explore_tabs | (.data$area_name == "England" & .data$metric_category == "All")) %>%
             # Rename metric_category_group with area_name for ease of plotting
-            dplyr::mutate(metric_category_group = factor(area_name) %>% forcats::fct_relevel(c("England")))
+            dplyr::mutate(metric_category_group = factor(.data$area_name) %>% forcats::fct_relevel(c("England")))
     }
 
     # Get colours for the number of unique metric_category_groups in this metric_category
     colours <- c("#228096", "#D07B4D", "#37906D", "#00436C", "#801650", "#3D3D3D", "#A285D1", "#EAD054") %>%
-        .[1:length(unique(tmp_df$metric_category_group))]
+        .data[1:length(unique(tmp_df$metric_category_group))]
 
     # Get indicator type for this metric (i.e. proportion or count)
     indicator_type <- tmp_df %>%
-        dplyr::distinct(indicator_type) %>%
-        dplyr::pull(indicator_type) %>%
+        dplyr::distinct(.data$indicator_type) %>%
+        dplyr::pull("indicator_type") %>%
         purrr::pluck(1)
 
     # Generate count or proportion chart, depending on metric indicator type

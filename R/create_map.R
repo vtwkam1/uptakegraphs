@@ -55,16 +55,16 @@ create_map <- function(df, unit) {
 
     # Keep only latest year of data
     df <- df %>%
-        dplyr::filter(metric_category == vars[[unit]][["filter"]],
-               period_start_date > max(period_start_date) - lubridate::years(1)) %>%
-        dplyr::group_by(area_name, area_gss_code) %>%
+        dplyr::filter(.data$metric_category == vars[[unit]][["filter"]],
+                      .data$period_start_date > max(.data$period_start_date) - lubridate::years(1)) %>%
+        dplyr::group_by(.data$area_name, .data$area_gss_code) %>%
         # Possible that some areas will not have full year of data
-        dplyr::summarise(period_start_date = min(period_start_date),
-                  period_end_date = max(period_end_date),
-                  numerator = sum(numerator),
-                  denominator = sum(denominator),
+        dplyr::summarise(period_start_date = min(.data$period_start_date),
+                         period_end_date = max(.data$period_end_date),
+                         numerator = sum(.data$numerator),
+                         denominator = sum(.data$denominator),
                   .groups = "drop") %>%
-        dplyr::mutate(indicator = numerator/denominator)
+        dplyr::mutate(indicator = .data$numerator/.data$denominator)
 
     # Load in the a .geoJSON file containing the relevant geographical shapes and simplify
     # these to increase plotting speed. In the code below, we are keeping 10% of the total points.
@@ -89,7 +89,7 @@ create_map <- function(df, unit) {
     map_table <- dplyr::left_join(shapes, df, by = dplyr::join_by(!!temp_join_col == "area_gss_code"))
 
     # Set up colour palette using the NICE sequential palette
-    pal <- leaflet::colorBin(grDevices::colorRampPalette(nice_pal("seq"))(5),
+    pal <- leaflet::colorBin(grDevices::colorRampPalette(niceRplots::nice_pal("seq"))(5),
                     domain = map_table$indicator,
                     bins = 5,
                     na.color = niceRplots::nice_cols("black_50"))

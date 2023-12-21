@@ -6,19 +6,21 @@
 \alias{line_chart_count}
 \title{Create line chart}
 \usage{
-create_line_chart(filtered_df, input_explore_tabs, selected_area_name = NULL)
+create_line_chart(df, input_explore_tabs, selected_area_name = NULL)
 
-line_chart_proportion(tmp_df, colours)
+line_chart_proportion(df, colours)
 
-line_chart_count(tmp_df, colours)
+line_chart_count(df, colours)
 }
 \arguments{
-\item{filtered_df}{Dataframe}
+\item{df}{Dataframe}
 
 \item{input_explore_tabs}{What data to plot (e.g. All, ICB, Ethnicity).}
 
 \item{selected_area_name}{Defaults to NULL. If a specific area is selected, e.g. Greater Manchester ICB,
 plots that area's data only.}
+
+\item{colours}{Character vector of HEX codes to use as line colours.}
 }
 \value{
 Plotly chart

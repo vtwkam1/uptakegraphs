@@ -41,9 +41,9 @@ apply_disclosure_control <- function(df) {
 
     # Apply replace_and_round function to numerator and denominator columns. Recalculate indicator
     df %>%
-        dplyr::mutate(numerator = replace_and_round(numerator),
-               denominator = replace_and_round(denominator),
-               indicator = round(numerator/denominator, 4)
+        dplyr::mutate(numerator = replace_and_round(.data$numerator),
+                      denominator = replace_and_round(.data$denominator),
+                      indicator = round(.data$numerator/.data$denominator, 4)
                )
 
 }

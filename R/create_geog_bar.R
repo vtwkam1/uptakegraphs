@@ -31,12 +31,12 @@ create_geog_bar <- function(df, input_geog_tabs){
 
     # Keep only data for right metric_category
     tmp_df <- df %>%
-        dplyr::filter(metric_category == input_geog_tabs)
+        dplyr::filter(.data$metric_category == input_geog_tabs)
 
     # Get indicator type for this metric (i.e. proportion or count)
     indicator_type <- tmp_df %>%
-        dplyr::distinct(indicator_type) %>%
-        dplyr::pull(indicator_type) %>%
+        dplyr::distinct(.data$indicator_type) %>%
+        dplyr::pull("indicator_type") %>%
         purrr::pluck(1)
 
     # Generate count or proportion chart, depending on metric indicator type
@@ -44,15 +44,15 @@ create_geog_bar <- function(df, input_geog_tabs){
 
         # Calculate proportion for latest year of data combined
         tmp_df <- tmp_df %>%
-            dplyr::filter(period_start_date > max(period_start_date, na.rm = T) - lubridate::years(1)) %>%
-            dplyr::group_by(area_name) %>%
+            dplyr::filter(.data$period_start_date > max(.data$period_start_date, na.rm = T) - lubridate::years(1)) %>%
+            dplyr::group_by(.data$area_name) %>%
             # Possible that some areas will not have full year of data
-            dplyr::summarise(period_start_date = min(period_start_date, na.rm = T),
-                      period_end_date = max(period_end_date, na.rm = T),
-                      numerator = sum(numerator),
-                      denominator = sum(denominator),
+            dplyr::summarise(period_start_date = min(.data$period_start_date, na.rm = T),
+                             period_end_date = max(.data$period_end_date, na.rm = T),
+                             numerator = sum(.data$numerator),
+                             denominator = sum(.data$denominator),
                       .groups = "drop") %>%
-            dplyr::mutate(indicator = numerator/denominator)
+            dplyr::mutate(indicator = .data$numerator/.data$denominator)
 
         # Get median
         median_var <- tmp_df$indicator %>%
@@ -66,7 +66,7 @@ create_geog_bar <- function(df, input_geog_tabs){
         # Calculate count for latest period of data
         # Do not sum latest year as this would count people many times
         tmp_df <- tmp_df %>%
-            dplyr::filter(period_start_date == max(period_start_date, na.rm = T))
+            dplyr::filter(.data$period_start_date == max(.data$period_start_date, na.rm = T))
 
         # Get median
         median_var <- tmp_df$indicator %>%
