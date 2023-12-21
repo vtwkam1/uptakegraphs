@@ -38,17 +38,17 @@ create_map <- function(df, unit) {
 
     # Variables to use for each type area level
     vars <- list(sub_icb_2019 = list(filter = "Sub-ICB",
-                                     geojson_file = "data/Clinical_Commissioning_Groups_April_2019_Boundaries_EN_BUC_2022_4644984930930678212.geojson",
+                                     geojson = ccg_shape,
                                      join_col = "ccg19cd",
                                      hover_label = "CCG",
                                      hover_label_col = "ccg19nm"),
                  sub_icb_2023 = list(filter = "Sub-ICB",
-                                     geojson_file = "data/Sub_Integrated_Care_Board_Locations_April_2023_EN_BSC_2087764644089335899.geojson",
+                                     geojson = subicb_shape,
                                      join_col = "sicbl23cd",
                                      hover_label = "Sub-ICB location",
                                      hover_label_col = "sicbl23nm"),
                  icb = list(filter = "ICB",
-                            geojson_file = "data/Integrated_Care_Boards_April_2023_EN_BSC_7929772807133590321.geojson",
+                            geojson = icb_shape,
                             join_col = "icb23cd",
                             hover_label = "ICB",
                             hover_label_col = "icb23nm"))
@@ -68,13 +68,7 @@ create_map <- function(df, unit) {
 
     # Load in the a .geoJSON file containing the relevant geographical shapes and simplify
     # these to increase plotting speed. In the code below, we are keeping 10% of the total points.
-    shapes <- sf::read_sf(vars[[unit]][["geojson_file"]]) %>%
-        rmapshaper::ms_simplify(keep = 0.1,
-                    # Stops small polygons from disappearing
-                    keep_shapes = TRUE) %>%
-        sf::st_transform('+proj=longlat +datum=WGS84')
-
-    names(shapes) <- janitor::make_clean_names(names(shapes))
+    shapes <- vars[[unit]][["geojson"]]
 
     # Combine these shapes into a single shape for the whole of England.
     # Setting the sf_use_s2() function to FALSE prevents the use of spherical geometry
