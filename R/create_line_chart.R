@@ -16,10 +16,11 @@
 #' * Selects the colours for the number of groups
 #' * Runs the correct line_chart_ function
 #'
-#' @param filtered_df Dataframe
+#' @param df Dataframe
 #' @param input_explore_tabs What data to plot (e.g. All, ICB, Ethnicity).
 #' @param selected_area_name Defaults to NULL. If a specific area is selected, e.g. Greater Manchester ICB,
 #' plots that area's data only.
+#' @param colours Character vector of HEX codes to use as line colours.
 #'
 #' @return Plotly chart
 #'
@@ -27,15 +28,15 @@
 #'
 #' @export
 
-create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_name = NULL){
+create_line_chart <- function(df, input_explore_tabs, selected_area_name = NULL){
 
     # Filter data for only metric_category of interest, e.g. "Ethnicity", "Sex"
     if (is.null(selected_area_name)) {
-        tmp_df <- filtered_df %>%
+        tmp_df <- df %>%
             dplyr::filter(metric_category == input_explore_tabs)
     } else {
         # If specific area selected, keep its data and national data
-        tmp_df <- filtered_df %>%
+        tmp_df <- df %>%
             dplyr::filter(metric_category == input_explore_tabs | (area_name == "England" & metric_category == "All")) %>%
             # Rename metric_category_group with area_name for ease of plotting
             dplyr::mutate(metric_category_group = factor(area_name) %>% forcats::fct_relevel(c("England")))
@@ -62,17 +63,17 @@ create_line_chart <- function(filtered_df, input_explore_tabs, selected_area_nam
 #' @rdname create_line_chart
 #' @export
 
-line_chart_proportion <- function(tmp_df, colours) {
+line_chart_proportion <- function(df, colours) {
 
     # If the data spans four years or more, only label every year on the x-axis
-    if ((lubridate::interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / lubridate::years(1)) >= 4) {
+    if ((lubridate::interval(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T)) / lubridate::years(1)) >= 4) {
         x_interval <- "M12"
     } else {
         # Label every 6 months
         x_interval <- "M6"
     }
 
-    tmp_df %>%
+    df %>%
         plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator*100,
                 color = ~metric_category_group,
@@ -139,17 +140,17 @@ line_chart_proportion <- function(tmp_df, colours) {
 #' @rdname create_line_chart
 #' @export
 
-line_chart_count <- function(tmp_df, colours) {
+line_chart_count <- function(df, colours) {
 
     # If the data spans more than four years, only label every year on the x-axis
-    if ((lubridate::interval(min(tmp_df$period_end_date, na.rm = T), max(tmp_df$period_end_date, na.rm = T)) / lubridate::years(1)) > 4) {
+    if ((lubridate::interval(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T)) / lubridate::years(1)) > 4) {
         x_interval <- "M12"
     } else {
         # Label every 6 months
         x_interval <- "M6"
     }
 
-    tmp_df %>%
+    df %>%
         plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator,
                 color = ~metric_category_group,

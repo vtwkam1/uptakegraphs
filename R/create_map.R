@@ -5,7 +5,7 @@
 #'
 #' `create_map()` contains the code to create a map in leaflet.
 #'
-#' @param metric_df Dataframe
+#' @param df Dataframe
 #' @param input_geog_tabs Area level (e.g. ICB, provider) to plot.
 #' @param unit Area level (e.g. ICB, provider) to plot.
 #'
@@ -15,18 +15,18 @@
 #'
 #' @export
 
-create_leaflet_map <- function(metric_df, input_geog_tabs) {
+create_leaflet_map <- function(df, input_geog_tabs) {
 
-    max_year <- lubridate::year(max(metric_df$period_end_date))
+    max_year <- lubridate::year(max(df$period_end_date))
 
     if (input_geog_tabs == "Sub-ICB") {
         if (max_year == 2019) {
-            create_map(metric_df, "sub_icb_2019")
+            create_map(df, "sub_icb_2019")
         } else if (max_year == 2023) {
-            create_map(metric_df, "sub_icb_2023")
+            create_map(df, "sub_icb_2023")
         }
     } else if (input_geog_tabs == "ICB") {
-        create_map(metric_df, "icb")
+        create_map(df, "icb")
     }
 
 }
@@ -34,7 +34,7 @@ create_leaflet_map <- function(metric_df, input_geog_tabs) {
 #' @rdname create_leaflet_map
 #' @export
 
-create_map <- function(metric_df, unit) {
+create_map <- function(df, unit) {
 
     # Variables to use for each type area level
     vars <- list(sub_icb_2019 = list(filter = "Sub-ICB",
@@ -54,7 +54,7 @@ create_map <- function(metric_df, unit) {
                             hover_label_col = "icb23nm"))
 
     # Keep only latest year of data
-    metric_df <- metric_df %>%
+    df <- df %>%
         dplyr::filter(metric_category == vars[[unit]][["filter"]],
                period_start_date > max(period_start_date) - lubridate::years(1)) %>%
         dplyr::group_by(area_name, area_gss_code) %>%
@@ -86,7 +86,7 @@ create_map <- function(metric_df, unit) {
     # Join our data to the dataframe containing the relevant sub-ICB location shapes. Ensure the
     # dataframe containing the shapes is the first argument in the join, as we want to preserve
     # the class of this table. If not the geometry column containing the shapes will be dropped.
-    map_table <- dplyr::left_join(shapes, metric_df, by = dplyr::join_by(!!temp_join_col == "area_gss_code"))
+    map_table <- dplyr::left_join(shapes, df, by = dplyr::join_by(!!temp_join_col == "area_gss_code"))
 
     # Set up colour palette using the NICE sequential palette
     pal <- leaflet::colorBin(grDevices::colorRampPalette(nice_pal("seq"))(5),
