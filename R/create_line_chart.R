@@ -44,7 +44,7 @@ create_line_chart <- function(df, input_explore_tabs, selected_area_name = NULL)
 
     # Get colours for the number of unique metric_category_groups in this metric_category
     colours <- c("#228096", "#D07B4D", "#37906D", "#00436C", "#801650", "#3D3D3D", "#A285D1", "#EAD054") %>%
-        .data[1:length(unique(tmp_df$metric_category_group))]
+        purrr::pluck(1:length(unique(tmp_df$metric_category_group)))
 
     # Get indicator type for this metric (i.e. proportion or count)
     indicator_type <- tmp_df %>%
