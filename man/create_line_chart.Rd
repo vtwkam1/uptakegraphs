@@ -2,15 +2,21 @@
 % Please edit documentation in R/create_line_chart.R
 \name{create_line_chart}
 \alias{create_line_chart}
+\alias{date_axis_intervals}
 \alias{line_chart_proportion}
 \alias{line_chart_count}
+\alias{line_chart_facet}
 \title{Create line chart}
 \usage{
 create_line_chart(df, input_explore_tabs, selected_area_name = NULL)
 
-line_chart_proportion(df, colours)
+date_axis_intervals(df)
 
-line_chart_count(df, colours)
+line_chart_proportion(df, colours, indicator_unit)
+
+line_chart_count(df, colours, indicator_unit)
+
+line_chart_facet(df, colours, indicator_type, indicator_unit)
 }
 \arguments{
 \item{df}{Dataframe}
@@ -21,6 +27,10 @@ line_chart_count(df, colours)
 plots that area's data only.}
 
 \item{colours}{Character vector of HEX codes to use as line colours.}
+
+\item{indicator_unit}{Units for indicator, used to label y-axis title.}
+
+\item{indicator_type}{Must be either "Count" or "Proportion"}
 }
 \value{
 Plotly chart

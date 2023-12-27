@@ -13,6 +13,7 @@ Imports:
     cli,
     dplyr (>= 1.0.0),
     forcats,
+    ggplot2,
     glue,
     grDevices,
     htmltools,
@@ -27,6 +28,7 @@ Imports:
     scales,
     sf,
     stats,
+    stringr,
     withr
 Suggests: 
     fs,
