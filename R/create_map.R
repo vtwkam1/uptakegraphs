@@ -5,6 +5,8 @@
 #'
 #' `create_map()` contains the code to create a map in leaflet.
 #'
+#' Currently only compatible with proportions.
+#'
 #' @param df Dataframe
 #' @param input_geog_tabs Area level (e.g. ICB, provider) to plot.
 #' @param unit Area level (e.g. ICB, provider) to plot.
@@ -63,8 +65,12 @@ create_map <- function(df, unit) {
                          period_end_date = max(.data$period_end_date),
                          numerator = sum(.data$numerator),
                          denominator = sum(.data$denominator),
+                         indicator_unit = unique(.data$indicator_unit)[[1]],
                   .groups = "drop") %>%
         dplyr::mutate(indicator = .data$numerator/.data$denominator)
+
+    # Get indicator unit
+    indicator_unit <- unique(df$indicator_unit)
 
     # Load in the a .geoJSON file containing the relevant geographical shapes and simplify
     # these to increase plotting speed. In the code below, we are keeping 10% of the total points.
@@ -114,9 +120,10 @@ create_map <- function(df, unit) {
                                                  fillOpacity = 1,
                                                  bringToFront = TRUE),
                     # Add hover labels to the shapes
-                    label = ~lapply(paste0("<strong>", vars[[unit]][["hover_label"]], ": </strong>", map_table[[temp_hover_label_col]],
-                                           "<br><strong>Uptake:</strong> ",
-                                           scales::label_percent(0.1)(map_table$indicator)),
+                    label = ~lapply(paste0("<strong>", vars[[unit]][["hover_label"]], ": </strong>",
+                                           map_table[[temp_hover_label_col]],
+                                           "<br><strong>", indicator_unit, "</strong> ",
+                                           round(map_table$indicator, 1)),
                                     htmltools::HTML),
                     # Set font options
                     labelOptions = leaflet::labelOptions(textsize = "12px",
@@ -124,9 +131,8 @@ create_map <- function(df, unit) {
         leaflet::addLegend(position = "bottomleft",
                   pal = pal,
                   values = ~map_table$indicator,
-                  title = "Uptake",
-                  labFormat = leaflet::labelFormat(suffix = "%",
-                                          transform = function(x) x*100),
+                  title = indicator_unit,
+                  labFormat = leaflet::labelFormat(transform = function(x) x*100),
                   opacity = 1)
 
     leaflet_map

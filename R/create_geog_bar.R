@@ -20,6 +20,7 @@
 #' @param df Dataframe
 #' @param input_geog_tabs Area level (e.g. ICB, provider) to plot.
 #' @param median_var Median indicator value for given area level split.
+#' @param indicator_unit Units for indicator, used to label y-axis title.
 #'
 #' @return Plotly chart
 #'
@@ -37,6 +38,12 @@ create_geog_bar <- function(df, input_geog_tabs){
     indicator_type <- tmp_df %>%
         dplyr::distinct(.data$indicator_type) %>%
         dplyr::pull("indicator_type") %>%
+        purrr::pluck(1)
+
+    # Get indicator unit for this metric (i.e. percentage (%) or count or median etc)
+    indicator_unit <- df %>%
+        dplyr::distinct(.data$indicator_unit) %>%
+        dplyr::pull("indicator_unit") %>%
         purrr::pluck(1)
 
     # Generate count or proportion chart, depending on metric indicator type
@@ -59,7 +66,7 @@ create_geog_bar <- function(df, input_geog_tabs){
             stats::median(na.rm = TRUE)
 
         # Plot chart
-        geog_bar_proportion(tmp_df, input_geog_tabs, median_var)
+        geog_bar_proportion(tmp_df, input_geog_tabs, median_var, indicator_unit)
 
     } else if (indicator_type == "Count") {
 
@@ -73,14 +80,14 @@ create_geog_bar <- function(df, input_geog_tabs){
             stats::median(na.rm = TRUE)
 
         # Plot chart
-        geog_bar_count(tmp_df, input_geog_tabs, median_var)
+        geog_bar_count(tmp_df, input_geog_tabs, median_var, indicator_unit)
     }
 }
 
 #' @rdname create_geog_bar
 #' @export
 
-geog_bar_proportion <- function(df, input_geog_tabs, median_var) {
+geog_bar_proportion <- function(df, input_geog_tabs, median_var, indicator_unit) {
     tmp <- df %>%
         plotly::plot_ly(x = ~stats::reorder(area_name, indicator), # Reorder area_name in order of size of indicator
                 y = ~indicator*100,
@@ -92,12 +99,12 @@ geog_bar_proportion <- function(df, input_geog_tabs, median_var) {
                 hovertext = ~paste0("Name: ", area_name,
                                     "<br>Numerator: ", scales::label_comma()(numerator),
                                     "<br>Denominator: ", scales::label_comma()(denominator),
-                                    "<br>Proportion: ", scales::label_percent(accuracy = 0.1)(indicator))) %>%
+                                    "<br>", indicator_unit, ": ", round(indicator*100, 1))) %>%
         plotly::add_lines(y = median_var*100,
                   name = "National median",
                   line = list(dash = 'dot',
                               color = "#000000"),
-                  hovertext = paste0("National median: ", scales::label_percent(accuracy = 0.01, scale = 100)(median_var))) %>%
+                  hovertext = paste0("National median: ", round(median_var*100, 1))) %>%
         plotly::add_annotations(xref = "paper",
                         yref ="y",
                         x = 0.02,
@@ -111,7 +118,7 @@ geog_bar_proportion <- function(df, input_geog_tabs, median_var) {
         # Add NICE theme and set axis titles
         niceRplots::nice_plotly_theme(x_title = paste0(input_geog_tabs, "s"),
                           axis_ticks = "none",
-                          y_title = "Proportion (%)",
+                          y_title = indicator_unit,
                           show_legend = FALSE)
 
     return(tmp)
@@ -120,7 +127,7 @@ geog_bar_proportion <- function(df, input_geog_tabs, median_var) {
 #' @rdname create_geog_bar
 #' @export
 
-geog_bar_count <- function(df, input_geog_tabs, median_var) {
+geog_bar_count <- function(df, input_geog_tabs, median_var, indicator_unit) {
     tmp <- df %>%
         plotly::plot_ly(x = ~stats::reorder(area_name, indicator), # Reorder area_name in order of size of indicator
                 y = ~indicator,
@@ -130,7 +137,7 @@ geog_bar_count <- function(df, input_geog_tabs, median_var) {
                 stroke = I("#FFFFFF"),
                 hoverinfo = "text",
                 hovertext = ~paste0("Name: ", area_name,
-                                    "<br>Count: ", scales::label_comma()(indicator))) %>%
+                                    "<br>", indicator_unit, ": ", scales::label_comma()(indicator))) %>%
         plotly::add_lines(y = median_var,
                   name = "National median",
                   line = list(dash = 'dot',
@@ -150,7 +157,7 @@ geog_bar_count <- function(df, input_geog_tabs, median_var) {
         # Add NICE theme and set axis titles
         niceRplots::nice_plotly_theme(x_title = paste0(input_geog_tabs, "s"),
                           axis_ticks = "none",
-                          y_title = "Count",
+                          y_title = indicator_unit,
                           show_legend = FALSE)
 
     return(tmp)

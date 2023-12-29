@@ -8,9 +8,9 @@
 \usage{
 create_geog_bar(df, input_geog_tabs)
 
-geog_bar_proportion(df, input_geog_tabs, median_var)
+geog_bar_proportion(df, input_geog_tabs, median_var, indicator_unit)
 
-geog_bar_count(df, input_geog_tabs, median_var)
+geog_bar_count(df, input_geog_tabs, median_var, indicator_unit)
 }
 \arguments{
 \item{df}{Dataframe}
@@ -18,6 +18,8 @@ geog_bar_count(df, input_geog_tabs, median_var)
 \item{input_geog_tabs}{Area level (e.g. ICB, provider) to plot.}
 
 \item{median_var}{Median indicator value for given area level split.}
+
+\item{indicator_unit}{Units for indicator, used to label y-axis title.}
 }
 \value{
 Plotly chart

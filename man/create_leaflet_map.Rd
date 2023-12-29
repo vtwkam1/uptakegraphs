@@ -23,4 +23,6 @@ Leaflet object
 \code{create_leaflet_map()} runs \code{create_map()} at the right geographical level (ICB or sub-ICB).
 
 \code{create_map()} contains the code to create a map in leaflet.
+
+Currently only compatible with proportions.
 }
