@@ -123,7 +123,7 @@ create_map <- function(df, unit) {
                     label = ~lapply(paste0("<strong>", vars[[unit]][["hover_label"]], ": </strong>",
                                            map_table[[temp_hover_label_col]],
                                            "<br><strong>", indicator_unit, "</strong> ",
-                                           round(map_table$indicator, 1)),
+                                           round(map_table$indicator*100, 1)),
                                     htmltools::HTML),
                     # Set font options
                     labelOptions = leaflet::labelOptions(textsize = "12px",
