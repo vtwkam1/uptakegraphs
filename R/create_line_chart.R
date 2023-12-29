@@ -229,7 +229,8 @@ line_chart_facet <- function(df, colours, indicator_type, indicator_unit) {
                                      color = .data$metric_category_subgroup,
                                      group = 1,
                                      # Create hover text
-                                     text = paste0(metric_category_subgroup_var, ": ", .data$metric_category_subgroup, "<br>",
+                                     text = paste0(metric_category_group_var, ": ", .data$metric_category_group, "<br>",
+                                                   metric_category_subgroup_var, ": ", .data$metric_category_subgroup, "<br>",
                                                    format(.data$period_end_date, "%b %Y"),"<br>",
                                                    indicator_unit, ": ", scales::label_comma()(.data$indicator)))) +
         # Add lines
