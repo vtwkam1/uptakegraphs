@@ -83,16 +83,26 @@ create_line_chart <- function(df, input_explore_tabs, selected_area_name = NULL)
 
 #' @rdname create_line_chart
 
+# Depending on date intervals in data, set x-axis ticks and tick labels
 date_axis_intervals <- function(df) {
+    # If the data is in financial years (checking the first row only), create x-axis labels in financial year format (e.g. "2018/19")
+    if (lubridate::month(df$period_start_date[[1]]) == 4 & lubridate::interval(df$period_start_date[[1]], df$period_end_date[[1]] + lubridate::days(1))/lubridate::years(1) == 1) {
+        fin_year <- TRUE
+        tickvals <- seq(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T), by = "years")
+        ticktext <- purrr::map_chr(tickvals, \(x) paste0(lubridate::year(x) - 1, "/", stringr::str_extract(as.character(lubridate::year(x)), "\\d{2}$")))
     # If the data spans four years or more, only label every year on the x-axis
-    if ((lubridate::interval(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T)) / lubridate::years(1)) >= 4) {
-        x_interval <- "12"
+    } else if ((lubridate::interval(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T)) / lubridate::years(1)) >= 4) {
+        fin_year <- FALSE
+        tickvals <- seq(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T), by = "years")
+        ticktext <- purrr::map_chr(tickvals, \(x) format(x, "%b %Y"))
     } else {
         # Label every 6 months
-        x_interval <- "6"
+        fin_year <- FALSE
+        tickvals <- seq(min(df$period_end_date, na.rm = T), max(df$period_end_date, na.rm = T), by = "6 months")
+        ticktext <- purrr::map_chr(tickvals, \(x) format(x, "%b %Y"))
     }
 
-    return(x_interval)
+    return(list(fin_year = fin_year, tickvals = tickvals, ticktext = ticktext))
 
 }
 
@@ -101,10 +111,14 @@ date_axis_intervals <- function(df) {
 
 line_chart_proportion <- function(df, colours, indicator_unit) {
 
-    # Calculate x interval needed - 6 or 12 months
-    x_interval <- date_axis_intervals(df)
+    # Determine x-axis date intervals and labels
+    date_xaxis <- date_axis_intervals(df)
 
     df %>%
+        # Generate hover date labels depending on if data is for a financial year
+        dplyr::mutate(hoverdate = ifelse(rep(date_xaxis$fin_year, nrow(df)),
+                                         paste0(lubridate::year(.data$period_end_date) - 1, "/", stringr::str_extract(as.character(lubridate::year(.data$period_end_date)), "\\d{2}$")),
+                                         format(.data$period_end_date, "%b %Y"))) %>%
         plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator*100,
                 color = ~metric_category_group,
@@ -116,7 +130,7 @@ line_chart_proportion <- function(df, colours, indicator_unit) {
                 hoverinfo = "text",
                 hovertext = ~paste0(metric_category_group,
                                     "<br>",
-                                    format(period_end_date, "%b %Y"),
+                                    hoverdate,
                                     "<br>Numerator: ",
                                     scales::label_comma()(numerator),
                                     "<br>Denominator: ",
@@ -128,12 +142,9 @@ line_chart_proportion <- function(df, colours, indicator_unit) {
             xaxis = list(type = "date", # Specify x axis is date
                          # Show x axis ticks
                          ticks = "outside",
-                         # Format ticks as abbreviated month name and full year, e.g. Jan 2018
-                         tickformat = "%b\n%Y",
-                         # Set first tick
-                         tick0 = ~min(period_end_date),
-                         # Tick every 6/12 months
-                         dtick = paste0("M", x_interval)
+                         tickmode = "array",
+                         tickvals = date_xaxis$tickvals,
+                         ticktext = date_xaxis$ticktext
             ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
@@ -149,10 +160,14 @@ line_chart_proportion <- function(df, colours, indicator_unit) {
 
 line_chart_count <- function(df, colours, indicator_unit) {
 
-    # Calculate x interval needed - 6 or 12 months
-    x_interval <- date_axis_intervals(df)
+    # Determine x-axis date intervals and labels
+    date_xaxis <- date_axis_intervals(df)
 
     df %>%
+        # Generate hover date labels depending on if data is for a financial year
+        dplyr::mutate(hoverdate = ifelse(rep(date_xaxis$fin_year, nrow(df)),
+                                         paste0(lubridate::year(.data$period_end_date) - 1, "/", stringr::str_extract(as.character(lubridate::year(.data$period_end_date)), "\\d{2}$")),
+                                         format(.data$period_end_date, "%b %Y"))) %>%
         plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator,
                 color = ~metric_category_group,
@@ -164,19 +179,16 @@ line_chart_count <- function(df, colours, indicator_unit) {
                 hoverinfo = "text",
                 hovertext = ~paste0(metric_category_group,
                                     "<br>",
-                                    format(period_end_date, "%b %Y"),
+                                    hoverdate,
                                     "<br>", indicator_unit, ": ",
                                     scales::label_comma()(indicator))) %>%
         plotly::layout(#showlegend = FALSE,
             xaxis = list(type = "date", # Specify x axis is date
                          # Show x axis ticks
                          ticks = "outside",
-                         # Format ticks as abbreviated month name and full year, e.g. Jan 2018
-                         tickformat = "%b\n%Y",
-                         # Set first tick
-                         tick0 = ~min(period_end_date),
-                         # Tick every 6/12 months
-                         dtick = paste0("M", x_interval)
+                         tickmode = "array",
+                         tickvals = date_xaxis$tickvals,
+                         ticktext = date_xaxis$ticktext
             ),
             # Y axis ticks with commas as thousands separators
             yaxis = list(tickformat = ",",
@@ -202,8 +214,8 @@ line_chart_facet <- function(df, colours, indicator_type, indicator_unit) {
     metric_category_group_var <- stringr::str_to_sentence(stringr::str_extract(metric_category_var, ".+(?= and )"))
     metric_category_subgroup_var <- stringr::str_to_sentence(stringr::str_extract(metric_category_var, "(?<= and ).+"))
 
-    # Calculate x interval needed - 6 or 12 months
-    x_interval <- date_axis_intervals(df)
+    # Determine x-axis date intervals and labels
+    date_xaxis <- date_axis_intervals(df)
 
     # Set ymax depending on indicator type
     if (indicator_type == "Proportion") {
@@ -224,6 +236,9 @@ line_chart_facet <- function(df, colours, indicator_type, indicator_unit) {
     }
 
     facet_chart <- df %>%
+        dplyr::mutate(hoverdate = ifelse(rep(date_xaxis$fin_year, nrow(df)),
+                                         paste0(lubridate::year(.data$period_end_date) - 1, "/", stringr::str_extract(as.character(lubridate::year(.data$period_end_date)), "\\d{2}$")),
+                                         format(.data$period_end_date, "%b %Y"))) %>%
         ggplot2::ggplot(ggplot2::aes(x = .data$period_end_date,
                                      y = .data$indicator,
                                      color = .data$metric_category_subgroup,
@@ -231,7 +246,7 @@ line_chart_facet <- function(df, colours, indicator_type, indicator_unit) {
                                      # Create hover text
                                      text = paste0(metric_category_group_var, ": ", .data$metric_category_group, "<br>",
                                                    metric_category_subgroup_var, ": ", .data$metric_category_subgroup, "<br>",
-                                                   format(.data$period_end_date, "%b %Y"),"<br>",
+                                                   .data$hoverdate,"<br>",
                                                    indicator_unit, ": ", scales::label_comma()(.data$indicator)))) +
         # Add lines
         ggplot2::geom_line(linewidth = 0.8) +
@@ -240,10 +255,8 @@ line_chart_facet <- function(df, colours, indicator_type, indicator_unit) {
         # Set y-axis limits and remove padding
         ggplot2::scale_y_continuous(expand = c(0,0), limits = c(0,ymax)) +
         # Set x-axis labels to show as month year, and to occur at 6-monthly intervals
-        ggplot2::scale_x_date(date_labels = "%b\n%Y",
-                              breaks = seq(min(df$period_end_date, na.rm = TRUE),
-                                           max(df$period_end_date, na.rm = TRUE),
-                                           by = paste0(x_interval, " months")),
+        ggplot2::scale_x_date(date_labels = date_xaxis$ticktext,
+                              breaks = date_xaxis$tickvals
                               # date_breaks = paste0(x_interval, " months")
                               ) +
         # Manually set the colour of the lines and points
