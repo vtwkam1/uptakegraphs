@@ -58,8 +58,29 @@ create_line_chart <- function(df, input_explore_tabs, selected_area_name = NULL)
         dplyr::pull("indicator_unit") %>%
         purrr::pluck(1)
 
-    # Set colours
-    colours <- c("#228096", "#D07B4D", "#37906D", "#00436C", "#801650", "#3D3D3D", "#A285D1", "#EAD054")
+    # Set colours depending on number of groups
+    n_groups <- length(unique(tmp_df$metric_category_group))
+
+    if(n_groups <= 8) {
+        # If 8 groups or less
+        # Palette mixing NICE brand colours with Government Analysis Service categorical palette
+        colours <- c("#228096", "#D07B4D", "#37906D", "#00436C", "#801650", "#3D3D3D", "#A285D1", "#EAD054")
+    } else if (n_groups <= 10) {
+        # If 10 groups or less
+        # Paul Tol's muted qualitative colour scheme
+        colours <- c("#332288", "#88CCEE", "#44AA99", "#117733", "#999933", "#DDCC77", "#CC6677", "#882255", "#AA4499", "#DDDDDD")
+    } else {
+        # If more than 10 groups
+        # Interpolate Paul Tol's smooth rainbow colour scheme
+        pal <- c("#E8ECFB", "#DDD8EF", "#D1C1E1", "#C3A8D1", "#B58FC2", "#A778B4",
+                 "#9B62A7", "#8C4E99", "#6F4C9B", "#6059A9", "#5568B8", "#4E79C5",
+                 "#4D8AC6", "#4E96BC", "#549EB3", "#59A5A9", "#60AB9E", "#69B190",
+                 "#77B77D", "#8CBC68", "#A6BE54", "#BEBC48", "#D1B541", "#DDAA3C",
+                 "#E49C39", "#E78C35", "#E67932", "#E4632D", "#DF4828", "#DA2222",
+                 "#B8221E", "#95211B", "#721E17", "#521A13", "#666666")
+
+        colours <- grDevices::colorRampPalette(pal, interpolate = "linear")(n_groups)
+    }
 
     # If no subgroups, no need for subplots
     if (sum(is.na(tmp_df$metric_category_subgroup) > 0)) {
