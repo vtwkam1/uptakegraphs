@@ -25,11 +25,13 @@ get_stat_title_text <- function(df, input_explore_tabs, selected_area_level, sel
 
     date_text_fn <- function(min_period_start_date, min_period_end_date, max_period_start_date, max_period_end_date) {
         if (lubridate::month(min_period_start_date) == 4 & lubridate::interval(min_period_start_date, min_period_end_date + lubridate::days(1))/lubridate::years(1) == 1) {
-
-            paste0(paste0(lubridate::year(min_period_start_date), "/", stringr::str_extract(as.character(lubridate::year(min_period_start_date) + 1), "\\d{2}$")),
-                   " to ",
-                   paste0(lubridate::year(max_period_start_date), "/", stringr::str_extract(as.character(lubridate::year(max_period_start_date) + 1), "\\d{2}$"))
-            )
+            if (lubridate::interval(min_period_start_date, max_period_end_date + lubridate::days(1))/lubridate::years(1) > 1) {
+                paste0(paste0(lubridate::year(min_period_start_date), "/", stringr::str_extract(as.character(lubridate::year(min_period_start_date) + 1), "\\d{2}$")),
+                       " to ",
+                       paste0(lubridate::year(max_period_start_date), "/", stringr::str_extract(as.character(lubridate::year(max_period_start_date) + 1), "\\d{2}$")))
+            } else {
+                paste0(lubridate::year(max_period_start_date), "/", stringr::str_extract(as.character(lubridate::year(max_period_start_date) + 1), "\\d{2}$"))
+            }
         }
         else if (min_period_start_date == max_period_start_date) {
             format(min_period_start_date, "%B %Y")
@@ -104,14 +106,20 @@ get_stat_title_text <- function(df, input_explore_tabs, selected_area_level, sel
             # Ensure date range correct as only latest year of data used for proportion bar charts
             if (indicator_type == "Proportion") {
                 # We use latest year of data for proportion bar charts in geographies
-                min_date <- df %>%
+                min_period_start_date <- df %>%
                     dplyr::filter(.data$period_start_date > max(.data$period_start_date) - lubridate::years(1)) %>%
                     dplyr::pull(.data$period_start_date) %>%
                     min(na.rm = TRUE)
 
+                min_period_end_date <- min_period_start_date + lubridate::years(1) - lubridate::days(1)
+
+                max_period_start_date <- min_period_start_date
+
+                max_period_end_date <- min_period_end_date
+
             } else if (indicator_type == "Count") {
                 # We use latest period of data for count bar charts in geographies
-                min_date <- max(df$period_start_date, na.rm = TRUE)
+                min_period_start_date <- max(df$period_start_date, na.rm = TRUE)
             }
 
         } else {
