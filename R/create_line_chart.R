@@ -103,6 +103,7 @@ create_line_chart <- function(df, input_explore_tabs, selected_area_name = NULL)
 }
 
 #' @rdname create_line_chart
+#' @export
 
 # Depending on date intervals in data, set x-axis ticks and tick labels
 date_axis_intervals <- function(df) {
@@ -143,6 +144,7 @@ line_chart_proportion <- function(df, colours, indicator_unit) {
         plotly::plot_ly(x = ~period_end_date,
                 y = ~indicator*100,
                 color = ~metric_category_group,
+                symbol = ~metric_category_group,
                 type = "scatter",
                 # Line with marker dot at each data point
                 mode = "lines+markers",
